@@ -2,17 +2,20 @@
 //  HolaIO.m
 //  HolaIO
 //
-//  Copyright (c) 2012 Holalabs SL
-//  Copyright (c) 2012 Jorge Izquierdo
-//  http://github.com/holalabs/holaio-ios/blob/master/LICENSE.txt
+//  Created by Jorge Izquierdo on 3/18/12.
+//  Copyright (c) 2012 JIzqApps. All rights reserved.
 //
 
 #import "HolaIO.h"
 
 @interface HolaIO (PrivateMethods)
-
+{
+    
+    
+    
+}
 -(void)doLoginWithKey:(NSString *)key;
-
+-(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block;
 @end
 @implementation HolaIO
 
@@ -38,7 +41,7 @@
 
 -(void)doLoginWithKey:(NSString *)key{
     
-    
+    autheticated = NO;
     NSString *url = [NSString stringWithFormat:@"https:/api.io.holalabs.com/login/%@", key];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     [request setHTTPMethod:@"GET"];
@@ -55,11 +58,9 @@
     }
 }
 
-
--(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
+-(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
     
     holaioblock = block;
-    
     NSString *requestURL = [[NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", url, cssSelector, (inner)?@"inner":@"outer"] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     //NSLog(@"req url %@", requestURL); 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
@@ -71,8 +72,35 @@
         
         recievedData = [[NSMutableData alloc] init];
     }
+
 }
 
+-(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
+    
+    if (autheticated){
+            
+            [self doRequestWithURL:url cssSelector:cssSelector inner:inner completionBlock:block];
+        }
+    else {
+        
+       [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timer:) userInfo:nil repeats:YES];
+        _url = url;
+        _css = cssSelector;
+        _inner = inner;
+        holaioblock = block;
+    }
+}
+
+-(void) timer:(NSTimer *)timer{
+    
+    if (autheticated){
+        
+        [timer invalidate];
+        [self doRequestWithURL:_url cssSelector:_css inner:_inner completionBlock:holaioblock];
+    }
+}
+
+                 
 #pragma mark -
 #pragma mark NSURLConnection Delegate
 - (BOOL)connection:(NSURLConnection *)connection
@@ -105,13 +133,14 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 -(void) connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    NSLog(@"did recieve");
+    
     [recievedData appendData:data];
 }
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection{
     
     if (connection == loginConnection){
         
+        autheticated = YES;
         NSLog(@"recieved");
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
         if ([dict objectForKey:@"auth"]){

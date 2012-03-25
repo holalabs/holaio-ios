@@ -2,9 +2,8 @@
 //  HolaIO.h
 //  HolaIO
 //
-//  Copyright (c) 2012 Holalabs SL
-//  Copyright (c) 2012 Jorge Izquierdo
-//  http://github.com/holalabs/holaio-ios/blob/master/LICENSE.txt
+//  Created by Jorge Izquierdo on 3/18/12.
+//  Copyright (c) 2012 JIzqApps. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -19,6 +18,12 @@ typedef void (^HolaIOBlock)(NSDictionary *dataReturned);
     NSURLConnection *loginConnection, *dataConnection;
     
     HolaIOBlock holaioblock;
+    
+    BOOL autheticated;
+
+    
+    NSString *_css, *_url;
+    BOOL _inner;
 }
 -(id)initWithAPIKey:(NSString *)key;
 +(id)initializeWithAPIKey:(NSString *)key;
