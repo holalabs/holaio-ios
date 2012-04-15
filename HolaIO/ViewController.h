@@ -15,5 +15,6 @@
 }
 @property (nonatomic, strong) IBOutlet UITextField *urlTf, *selectorTf;
 @property (nonatomic, strong) IBOutlet UITextView *outputTV;
--(IBAction)makeRequest:(id)sender;
+-(IBAction)cached:(id)sender;
+-(IBAction)nocached:(id)sender;
 @end

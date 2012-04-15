@@ -7,13 +7,14 @@
 //
 
 #import "AppDelegate.h"
-
+#import "HolaIO.h"
 @implementation AppDelegate
 
 @synthesize window = _window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [HolaIO clearCache];
     // Override point for customization after application launch.
     return YES;
 }
@@ -42,6 +43,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 

@@ -60,7 +60,9 @@
 
 -(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
     
-    holaioblock = block;
+    
+    
+    
     NSString *requestURL = [[NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", url, cssSelector, (inner)?@"inner":@"outer"] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     //NSLog(@"req url %@", requestURL); 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
@@ -72,24 +74,67 @@
         
         recievedData = [[NSMutableData alloc] init];
     }
+        
+    
 
 }
 
--(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
+-(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner cache:(BOOL)cache completionBlock:(HolaIOBlock)block{
     
-    if (autheticated){
+    holaioblock = block;
+    NSString *inn = (inner)?@"inner":@"outer"; 
+    __inner = inn;
+    NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *array = [def objectForKey:@"holaio"];
+    NSLog(@"%@", array);
+    BOOL ret = NO;
+    
+
+    if (array != nil && cache){
+        
+        for (NSDictionary *dict in array){
+            
+            
+            if ([[dict objectForKey:@"url"] isEqualToString:url] && [[dict objectForKey:@"css"] isEqualToString:cssSelector] && [[dict objectForKey:@"inner"] isEqualToString:inn]){
+                
+                NSLog(@"cached res");
+                ret = YES;
+                holaioblock([dict objectForKey:@"res"]);
+            }
+
+        }
+    }
+    
+    else {
+        
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict setObject:url forKey:@"url"];
+        [dict setObject:cssSelector forKey:@"css"];
+        [dict setObject:inn forKey:@"inner"];
+        
+        currentReqDict = dict;
+        
+    }
+
+    if (!ret){
+        
+        if (autheticated){
             
             [self doRequestWithURL:url cssSelector:cssSelector inner:inner completionBlock:block];
         }
-    else {
         
-       [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timer:) userInfo:nil repeats:YES];
-        _url = url;
-        _css = cssSelector;
-        _inner = inner;
-        holaioblock = block;
+        else {
+        
+            [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timer:) userInfo:nil repeats:YES];
+            _url = url;
+            _css = cssSelector;
+            _inner = inner;
+            _cache = cache;
+            holaioblock = block;
+        }
     }
 }
+
 
 -(void) timer:(NSTimer *)timer{
     
@@ -159,10 +204,39 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
         NSDictionary *returnedData = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
         if (returnedData){
             
+            NSLog(@"normal res");
             holaioblock(returnedData);
+            if (_cache){
+            [currentReqDict setObject:returnedData forKey:@"res"];
+            NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+            NSMutableArray *array = [def objectForKey:@"holaio"];
+            if (array == nil) array = [NSMutableArray array];
+            
+            /*BOOL al = NO;
+            for (NSDictionary *dict in array){
+                
+                if ([[dict objectForKey:@"url"] isEqualToString:_url] && [[dict objectForKey:@"css"] isEqualToString:_css] && [[dict objectForKey:@"inner"] isEqualToString:__inner]){
+                    
+                    al = YES;
+                }
+            }*/
+            
+            //if (!al){
+            [array addObject:currentReqDict];
+            [def setObject:array forKey:@"holaio"];
+            //}
+            }
+            
         }
         [recievedData setLength:0];
     }
+}
+
++(void) clearCache{
+    
+    NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *array = [NSMutableArray array];
+    [def setObject:array forKey:@"holaio"];
 }
 
 @end

@@ -22,13 +22,16 @@ typedef void (^HolaIOBlock)(NSDictionary *dataReturned);
     BOOL autheticated;
 
     
-    NSString *_css, *_url;
-    BOOL _inner;
+    NSString *_css, *_url, *__inner;
+    BOOL _inner, _cache;
+    
+    NSMutableDictionary *currentReqDict;
 }
 -(id)initWithAPIKey:(NSString *)key;
 +(id)initializeWithAPIKey:(NSString *)key;
 
++(void)clearCache;
 
+-(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner cache:(BOOL)cache completionBlock:(HolaIOBlock)block;
 
--(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block;
 @end
