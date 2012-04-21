@@ -14,7 +14,7 @@
     
     
 }
--(void)doLoginWithKey:(NSString *)key;
+
 -(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block;
 @end
 @implementation HolaIO
@@ -27,7 +27,7 @@
     if (self != nil){
         
         //implementation
-        [self doLoginWithKey:key];
+        apikey = key;
     }
     
     return self;
@@ -39,34 +39,16 @@
 
 #pragma mark Methods
 
--(void)doLoginWithKey:(NSString *)key{
-    
-    autheticated = NO;
-    NSString *url = [NSString stringWithFormat:@"https:/api.io.holalabs.com/login/%@", key];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
-    [request setHTTPMethod:@"GET"];
-   
-    
-    loginConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    
-    [loginConnection start];
-    if (loginConnection){
-        
-        
-        recievedData = [[NSMutableData alloc] init];
-        
-    }
-}
 
 -(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
     
     
-    
-    
     NSString *requestURL = [[NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", url, cssSelector, (inner)?@"inner":@"outer"] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    
     //NSLog(@"req url %@", requestURL); 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     [request setHTTPMethod:@"GET"];
+    [request setValue:apikey forHTTPHeaderField:@"X-apikey"];
     
     dataConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     [dataConnection start];
@@ -78,7 +60,6 @@
     
 
 }
-
 -(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner cache:(BOOL)cache completionBlock:(HolaIOBlock)block{
     
     holaioblock = block;
@@ -99,7 +80,7 @@
                 
                 NSLog(@"cached res");
                 ret = YES;
-                holaioblock([dict objectForKey:@"res"]);
+                holaioblock([dict objectForKey:@"res"], nil);
             }
 
         }
@@ -118,32 +99,13 @@
 
     if (!ret){
         
-        if (autheticated){
+       
             
             [self doRequestWithURL:url cssSelector:cssSelector inner:inner completionBlock:block];
-        }
+    }        
         
-        else {
-        
-            [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timer:) userInfo:nil repeats:YES];
-            _url = url;
-            _css = cssSelector;
-            _inner = inner;
-            _cache = cache;
-            holaioblock = block;
-        }
-    }
 }
 
-
--(void) timer:(NSTimer *)timer{
-    
-    if (autheticated){
-        
-        [timer invalidate];
-        [self doRequestWithURL:_url cssSelector:_css inner:_inner completionBlock:holaioblock];
-    }
-}
 
                  
 #pragma mark -
@@ -171,8 +133,12 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
     
 	[challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
 }
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response{
+
+-(void) connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
     
+    holaioblock(nil, error);
+}
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response{
     
     [recievedData setLength:0];
 }
@@ -183,29 +149,14 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection{
     
-    if (connection == loginConnection){
-        
-        autheticated = YES;
-        NSLog(@"recieved");
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
-        if ([dict objectForKey:@"auth"]){
-            
-            NSLog(@"Authorised");
-        }
-        else {
-            
-            NSLog(@"ERROR AUTH: %@", [dict objectForKey:@"error"]);
-        }
-        [recievedData setLength:0];
-    }
     
-    if (connection == dataConnection){
+        if (connection == dataConnection){
         
         NSDictionary *returnedData = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
         if (returnedData){
             
             NSLog(@"normal res");
-            holaioblock(returnedData);
+            holaioblock(returnedData, nil);
             if (_cache){
             [currentReqDict setObject:returnedData forKey:@"res"];
             NSUserDefaults *def = [NSUserDefaults standardUserDefaults];

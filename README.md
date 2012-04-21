@@ -36,9 +36,11 @@ Parameters:
 Usage:
 
 ``` objetivec
-[io sendRequestWithURL:"google.com" cssSelector:"a span" inner:YES cache:YES completionBlock:^(NSDictionary *dataReturned) {
-  [dataReturned objectForKey:@"a span"];
-  // Have fun
+[io sendRequestWithURL:"google.com" cssSelector:"a span" inner:YES cache:YES completionBlock:^(NSDictionary *dataReturned, NSError *error) {
+  
+	/*if there's no error it'll be nil*/
+  [dataReturned objectForKey:@"a span"]; //whatever object you requested
+  
 }];
 ```
 

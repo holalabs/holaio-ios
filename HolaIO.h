@@ -8,24 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^HolaIOBlock)(NSDictionary *dataReturned);
+typedef void (^HolaIOBlock)(NSDictionary *dataReturned, NSError *error);
 
 @interface HolaIO : NSObject <NSURLConnectionDelegate>
 {
     
     NSMutableData *recievedData;
     
-    NSURLConnection *loginConnection, *dataConnection;
+    NSURLConnection  *dataConnection;
     
     HolaIOBlock holaioblock;
     
-    BOOL autheticated;
 
     
     NSString *_css, *_url, *__inner;
     BOOL _inner, _cache;
     
     NSMutableDictionary *currentReqDict;
+    
+    NSString *apikey;
 }
 -(id)initWithAPIKey:(NSString *)key;
 +(id)initializeWithAPIKey:(NSString *)key;
