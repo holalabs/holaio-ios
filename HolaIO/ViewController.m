@@ -26,7 +26,7 @@
     [outputTV setText:nil];
     [self.urlTf resignFirstResponder];
     [self.selectorTf resignFirstResponder];
-    [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:YES completionBlock:^(NSDictionary *dataReturned) {
+    [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:YES completionBlock:^(NSDictionary *dataReturned, NSError *error) {
         
         NSString *data = [NSString stringWithFormat:@"%@", [dataReturned objectForKey:self.selectorTf.text]];
         [outputTV setText:data];
@@ -37,7 +37,7 @@
     [outputTV setText:nil];
     [self.urlTf resignFirstResponder];
     [self.selectorTf resignFirstResponder];
-    [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:NO completionBlock:^(NSDictionary *dataReturned) {
+    [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:NO completionBlock:^(NSDictionary *dataReturned,NSError *error) {
         
         NSString *data = [NSString stringWithFormat:@"%@", [dataReturned objectForKey:self.selectorTf.text]];
         [outputTV setText:data];

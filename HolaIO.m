@@ -39,16 +39,21 @@
 
 #pragma mark Methods
 
-
+-(NSString*)encode:(NSString *)str{
+    
+    return (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge_retained CFStringRef)str, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8);
+}
 -(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
     
     
-    NSString *requestURL = [[NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", url, cssSelector, (inner)?@"inner":@"outer"] stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+    NSString *requestURL = [NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", [self encode:url], [self encode:cssSelector], (inner)?@"inner":@"outer"];
     
-    //NSLog(@"req url %@", requestURL); 
+    
+    
+    NSLog(@"req url %@", requestURL); 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     [request setHTTPMethod:@"GET"];
-    [request setValue:apikey forHTTPHeaderField:@"X-apikey"];
+    [request setValue:apikey forHTTPHeaderField:@"X-Api-Key"];
     
     dataConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     [dataConnection start];
@@ -63,6 +68,7 @@
 -(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner cache:(BOOL)cache completionBlock:(HolaIOBlock)block{
     
     holaioblock = block;
+    _cache = cache;
     NSString *inn = (inner)?@"inner":@"outer"; 
     __inner = inn;
     NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
@@ -86,7 +92,7 @@
         }
     }
     
-    else {
+    
         
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict setObject:url forKey:@"url"];
@@ -95,7 +101,7 @@
         
         currentReqDict = dict;
         
-    }
+    
 
     if (!ret){
         
@@ -155,27 +161,20 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
         NSDictionary *returnedData = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
         if (returnedData){
             
-            NSLog(@"normal res");
+            
             holaioblock(returnedData, nil);
             if (_cache){
             [currentReqDict setObject:returnedData forKey:@"res"];
             NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
-            NSMutableArray *array = [def objectForKey:@"holaio"];
-            if (array == nil) array = [NSMutableArray array];
-            
-            /*BOOL al = NO;
-            for (NSDictionary *dict in array){
+                NSArray *ar = [def objectForKey:@"holaio"];
                 
-                if ([[dict objectForKey:@"url"] isEqualToString:_url] && [[dict objectForKey:@"css"] isEqualToString:_css] && [[dict objectForKey:@"inner"] isEqualToString:__inner]){
-                    
-                    al = YES;
-                }
-            }*/
-            
-            //if (!al){
+                NSMutableArray *array = [[NSMutableArray alloc] initWithArray:ar];
+                
+                                        
             [array addObject:currentReqDict];
             [def setObject:array forKey:@"holaio"];
-            //}
+            NSLog(@"%@", array);
+           
             }
             
         }
