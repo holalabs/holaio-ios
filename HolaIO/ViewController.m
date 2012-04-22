@@ -13,9 +13,12 @@
 @end
 
 @implementation ViewController
-@synthesize urlTf, selectorTf, outputTV;
+@synthesize urlTf, selectorTf, tableView;
+
 - (void)viewDidLoad
 {
+    [self.tableView setDelegate:self];
+    [self.tableView setDataSource:self];
     holaIO = [HolaIO initializeWithAPIKey:@"4f6f4203fbece1b563000041"];
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
@@ -23,35 +26,50 @@
 
 -(IBAction)cached:(id)sender{
     
-    [outputTV setText:nil];
+    array = nil;
+    [self.tableView reloadData];
     [self.urlTf resignFirstResponder];
     [self.selectorTf resignFirstResponder];
     [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:YES completionBlock:^(NSDictionary *dataReturned, NSError *error) {
         
-        NSString *data = [NSString stringWithFormat:@"%@", [dataReturned objectForKey:self.selectorTf.text]];
-        [outputTV setText:data];
+        array = [dataReturned objectForKey:self.selectorTf.text];
+        [self.tableView reloadData];
+        
     }];
 }
 -(IBAction)nocached:(id)sender{
     
-    [outputTV setText:nil];
+    array = nil;
+    [self.tableView reloadData];
     [self.urlTf resignFirstResponder];
     [self.selectorTf resignFirstResponder];
     [holaIO sendRequestWithURL:self.urlTf.text cssSelector:self.selectorTf.text inner:YES cache:NO completionBlock:^(NSDictionary *dataReturned,NSError *error) {
         
-        NSString *data = [NSString stringWithFormat:@"%@", [dataReturned objectForKey:self.selectorTf.text]];
-        [outputTV setText:data];
+        array = [dataReturned objectForKey:self.selectorTf.text];
+        [self.tableView reloadData];
     }];
 }
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    
+    return 1;
+}
 
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    
+    return [array count];
+}
+
+-(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    cell.textLabel.text = [array objectAtIndex:indexPath.row];
+    
+    return cell;
+}
 @end
