@@ -23,7 +23,7 @@ Usage:
 HolaIO *io =  [HolaIO initializeWithAPIKey:@"yourapikey"];
 ```
 
-## Request: -(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)css inner:(BOOL)inner cache:(BOOL)cache completionBlock:^(NSDictionary *dataReturned)
+## Request: -(void)sendRequestWithURL:(NSString *)url cssSelector:(NSString *)css inner:(BOOL)inner cache:(BOOL)cache completionBlock:^(NSDictionary *dataReturned, NSError *error)
 
 Parameters:
 
@@ -32,7 +32,7 @@ Parameters:
   - inner: Specify if you want to extract the innerHTML content or the whole content of your selection (outerHTML). Possible values: `YES` for innerHTML and `NO` for outerHTML.
   - cache: Specify if you want that the content you get is stored in the cache so it's loaded just one time in the app lifecycle. Possible values: `YES` to store cache and `NO` to not store it. 
   - completionBlock: It returns an NSDictionary with the JSON parsed that HolaIO returned. Just access the selector wanted like: `[dataReturned objectForKey:@"key"];`
-
+-error: NSError object returned in case of fail
 Usage:
 
 ``` objetivec
