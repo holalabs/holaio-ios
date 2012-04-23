@@ -50,7 +50,7 @@
     
     
     
-    NSLog(@"req url %@", requestURL); 
+    
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:requestURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     [request setHTTPMethod:@"GET"];
     [request setValue:apikey forHTTPHeaderField:@"X-Api-Key"];
@@ -73,7 +73,7 @@
     __inner = inn;
     NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
     NSMutableArray *array = [def objectForKey:@"holaio"];
-    NSLog(@"%@", array);
+    
     BOOL ret = NO;
     
 
@@ -84,7 +84,8 @@
             
             if ([[dict objectForKey:@"url"] isEqualToString:url] && [[dict objectForKey:@"css"] isEqualToString:cssSelector] && [[dict objectForKey:@"inner"] isEqualToString:inn]){
                 
-                NSLog(@"cached res");
+                
+                
                 ret = YES;
                 holaioblock([dict objectForKey:@"res"], nil);
             }
@@ -173,7 +174,7 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
                                         
             [array addObject:currentReqDict];
             [def setObject:array forKey:@"holaio"];
-            NSLog(@"%@", array);
+            
            
             }
             
