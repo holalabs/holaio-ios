@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA938CC51545CAC9008CC221 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DA938CC41545CAC9008CC221 /* icon.png */; };
+		DA938CC81545CAFF008CC221 /* icon 2.png in Resources */ = {isa = PBXBuildFile; fileRef = DA938CC71545CAFF008CC221 /* icon 2.png */; };
 		E19C10F81516114D00E5C535 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E19C10F71516114D00E5C535 /* UIKit.framework */; };
 		E19C10FA1516114D00E5C535 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E19C10F91516114D00E5C535 /* Foundation.framework */; };
 		E19C10FC1516114D00E5C535 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E19C10FB1516114D00E5C535 /* CoreGraphics.framework */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DA938CC41545CAC9008CC221 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		DA938CC71545CAFF008CC221 /* icon 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon 2.png"; sourceTree = "<group>"; };
 		E19C10F31516114D00E5C535 /* HolaIO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HolaIO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E19C10F71516114D00E5C535 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E19C10F91516114D00E5C535 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -80,6 +84,8 @@
 		E19C10FD1516114D00E5C535 /* HolaIO */ = {
 			isa = PBXGroup;
 			children = (
+				DA938CC41545CAC9008CC221 /* icon.png */,
+				DA938CC71545CAFF008CC221 /* icon 2.png */,
 				E19C11061516114D00E5C535 /* AppDelegate.h */,
 				E19C11071516114D00E5C535 /* AppDelegate.m */,
 				E19C11091516114D00E5C535 /* MainStoryboard.storyboard */,
@@ -156,6 +162,8 @@
 			files = (
 				E19C11021516114D00E5C535 /* InfoPlist.strings in Resources */,
 				E19C110B1516114D00E5C535 /* MainStoryboard.storyboard in Resources */,
+				DA938CC51545CAC9008CC221 /* icon.png in Resources */,
+				DA938CC81545CAFF008CC221 /* icon 2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +289,7 @@
 				E19C11131516114D00E5C535 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
