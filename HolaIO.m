@@ -45,8 +45,9 @@
 }
 -(void)doRequestWithURL:(NSString *)url cssSelector:(NSString *)cssSelector inner:(BOOL)inner completionBlock:(HolaIOBlock)block{
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-    NSString *requestURL = [NSString stringWithFormat:@"https://api.io.holalabs.com/%@/%@/%@", [self encode:url], [self encode:cssSelector], (inner)?@"inner":@"outer"];
+    NSString *requestURL = [NSString stringWithFormat:@"https://api.holalabs.com/io/%@/%@/%@", [self encode:url], [self encode:cssSelector], (inner)?@"inner":@"outer"];
     
     
     
@@ -156,7 +157,7 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection{
     
-    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         if (connection == dataConnection){
         
         NSDictionary *returnedData = [NSJSONSerialization JSONObjectWithData:recievedData options:kNilOptions error:nil];
