@@ -46,4 +46,5 @@ Usage:
 Note:
 
 If you're using cache and you want to cache only during app lifecycle, you have to clear cache before starting. To do it, simply call `[HolaIO clearCache]` in `(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`, in AppDelegate
+.
 
